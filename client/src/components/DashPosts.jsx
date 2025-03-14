@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
-import { set } from 'mongoose';
 
 export default function DashPosts() {
   const { currentUser } = useSelector((state) => state.user);
@@ -11,6 +10,7 @@ export default function DashPosts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState('');
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -23,13 +23,13 @@ export default function DashPosts() {
           }
         }
       } catch (error) {
-        console.log(error.message);
+        console.error('Error fetching posts:', error);
       }
     };
-    if (currentUser.isAdmin) {
+    if (currentUser?.isAdmin) {
       fetchPosts();
     }
-  }, [currentUser._id]);
+  }, [currentUser]);
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
@@ -45,7 +45,7 @@ export default function DashPosts() {
         }
       }
     } catch (error) {
-      console.log(error.message);
+      console.error('Error fetching more posts:', error);
     }
   };
 
@@ -60,20 +60,18 @@ export default function DashPosts() {
       );
       const data = await res.json();
       if (!res.ok) {
-        console.log(data.message);
+        console.error('Error deleting post:', data.message);
       } else {
-        setUserPosts((prev) =>
-          prev.filter((post) => post._id !== postIdToDelete)
-        );
+        setUserPosts((prev) => prev.filter((post) => post._id !== postIdToDelete));
       }
     } catch (error) {
-      console.log(error.message);
+      console.error('Error deleting post:', error);
     }
   };
 
   return (
     <div className='table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500'>
-      {currentUser.isAdmin && userPosts.length > 0 ? (
+      {currentUser?.isAdmin && userPosts.length > 0 ? (
         <>
           <Table hoverable className='shadow-md'>
             <Table.Head>
@@ -86,9 +84,9 @@ export default function DashPosts() {
                 <span>Edit</span>
               </Table.HeadCell>
             </Table.Head>
-            {userPosts.map((post) => (
-              <Table.Body className='divide-y'>
-                <Table.Row className='bg-white dark:border-gray-700 dark:bg-gray-800'>
+            <Table.Body className='divide-y'>
+              {userPosts.map((post) => (
+                <Table.Row key={post._id} className='bg-white dark:border-gray-700 dark:bg-gray-800'>
                   <Table.Cell>
                     {new Date(post.updatedAt).toLocaleDateString()}
                   </Table.Cell>
@@ -130,8 +128,8 @@ export default function DashPosts() {
                     </Link>
                   </Table.Cell>
                 </Table.Row>
-              </Table.Body>
-            ))}
+              ))}
+            </Table.Body>
           </Table>
           {showMore && (
             <button
