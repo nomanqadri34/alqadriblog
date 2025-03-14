@@ -1,19 +1,33 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  
+  // Ensure correct asset base path (use '/' for absolute paths in deployment)
+  base: mode === 'development' ? '/' : '/',
+
   server: {
-    proxy: mode === 'development' ? {  // Proxy only in development
+    port: 5173, // Ensure Vite runs on a consistent port
+    proxy: mode === 'development' ? {
       '/api': {
         target: 'https://alqadriblog-1.onrender.com',
         secure: false,
         changeOrigin: true,
       }
-    } : {}
+    } : undefined,
   },
+
+  resolve: {
+    alias: {
+      '@': '/src', // Allows using '@' as a shorthand for '/src'
+    }
+  },
+
   build: {
-    outDir: 'dist',  // Ensure correct output directory for deployment
+    outDir: 'dist', // Ensure correct output directory for Render deployment
+    sourcemap: true, // Enable source maps for easier debugging
+    target: 'esnext', // Ensure compatibility with modern browsers
   }
 }));
+
