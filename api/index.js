@@ -1,13 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
-
-import cookieParser from 'cookie-parser';
-import path from 'path';
 
 dotenv.config();  // Load environment variables
 
@@ -18,6 +19,29 @@ if (!MONGO_URI) {
   console.error("❌ MONGO URI is missing! Check your .env file.");
   process.exit(1);  // Exit if no MongoDB URI is found
 }
+
+const app = express(); // ✅ Define `app` first
+
+// Enable CORS after defining `app`
+
+// ✅ Enable CORS with Explicit Headers
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "http://localhost:5173"); // Allow frontend origin
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allowed methods
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true"); // Allow cookies & authentication
+  if (req.method === "OPTIONS") {
+      return res.sendStatus(200); // Preflight request response
+  }
+  next();
+});
+
+// ✅ Use CORS Middleware
+app.use(cors({
+origin: ["http://localhost:5173", "https://alqadriblog-1.onrender.com"], // Allow frontend origins
+methods: ["GET", "POST", "PUT", "DELETE"],
+credentials: true // Allow cookies and authentication
+}));
 
 // Connect to MongoDB
 mongoose
@@ -32,8 +56,6 @@ mongoose
 
 const __dirname = path.resolve();
 
-const app = express();
-
 app.use(express.json());
 app.use(cookieParser());
 
@@ -42,7 +64,6 @@ app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/comment', commentRoutes);
-
 
 // Serve static files from client build
 app.use(express.static(path.join(__dirname, '/client/dist')));

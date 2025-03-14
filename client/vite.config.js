@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  base: mode === 'development' ? '/' : './', // Ensure correct base path
   server: {
     proxy: mode === 'development' ? {  // Proxy only in development
       '/api': {
@@ -15,5 +15,9 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: 'dist',  // Ensure correct output directory for deployment
+    sourcemap: true,  // Helpful for debugging production errors
+  },
+  esbuildOptions: {
+    target: 'esnext',  // Ensure compatibility with modern browsers
   }
 }));

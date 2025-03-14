@@ -78,7 +78,7 @@ export default function CreatePost() {
     console.log("Submitting Form Data:", formData);
 
     try {
-      const res = await fetch("/api/post/create", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/post/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
