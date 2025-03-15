@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     proxy: mode === 'development' ? {  // Proxy only in development
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'https://alqadriblog-1.onrender.com',
         secure: false,
         changeOrigin: true,
       }
