@@ -38,7 +38,7 @@ app.use((req, res, next) => {
 
 // ✅ Use CORS Middleware
 app.use(cors({
-origin: ["http://localhost:5173", "https://alqadriblog-1.onrender.com"], // Allow frontend origins
+origin: ["https://alqadriblog.vercel.app/"], // Allow frontend origins
 methods: ["GET", "POST", "PUT", "DELETE"],
 credentials: true // Allow cookies and authentication
 }));
