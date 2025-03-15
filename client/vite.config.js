@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => ({
   server: {
     proxy: mode === 'development' ? {  // Proxy only in development
       '/api': {
-        target: 'https://alqadriblog-1.onrender.com',
+        target: 'https://alqadriblog-469x.vercel.app/',
         secure: false,
         changeOrigin: true,
       }
