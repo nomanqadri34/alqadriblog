@@ -17,41 +17,25 @@ const MONGO_URI = process.env.MONGO || "mongodb+srv://nomanqadri34:U0hSWV1mHsiR7
 // Debugging: Check if MongoDB URI is loading
 if (!MONGO_URI) {
   console.error("❌ MONGO URI is missing! Check your .env file.");
-  process.exit(1);  // Exit if no MongoDB URI is found
+  process.exit(1);
 }
 
 const app = express(); // ✅ Define `app` first
 
-// Enable CORS after defining `app`
-
-// ✅ Enable CORS with Explicit Headers
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://alqadriblog.vercel.app/"); // Allow frontend origin
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allowed methods
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true"); // Allow cookies & authentication
-  if (req.method === "OPTIONS") {
-      return res.sendStatus(200); // Preflight request response
-  }
-  next();
-});
-
-// ✅ Use CORS Middleware
+// ✅ Use CORS Middleware Before Any Routes
 app.use(cors({
-origin: ["https://alqadriblog.vercel.app/"], // Allow frontend origins
-methods: ["GET", "POST", "PUT", "DELETE"],
-credentials: true // Allow cookies and authentication
+  origin: ["https://alqadriblog.vercel.app/"], // Allow frontend origin
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true // Allow cookies and authentication
 }));
 
-// Connect to MongoDB
+// ✅ Connect to MongoDB
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('✅ MongoDB is connected successfully!');
-  })
+  .connect(MONGO_URI)
+  .then(() => console.log('✅ MongoDB is connected successfully!'))
   .catch((err) => {
     console.error("❌ MongoDB Connection Error:", err);
-    process.exit(1);  // Exit on error
+    process.exit(1);
   });
 
 const __dirname = path.resolve();
@@ -59,31 +43,31 @@ const __dirname = path.resolve();
 app.use(express.json());
 app.use(cookieParser());
 
-// API Routes
+// ✅ API Routes
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/comment', commentRoutes);
 
-// Serve static files from client build
-app.use(express.static(path.join(__dirname, '/client/dist')));
+// ✅ Serve Static Files in Production
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
+// ✅ Handle React Routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
-// Global Error Handling
+// ✅ Global Error Handling Middleware
 app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-  res.status(statusCode).json({
+  console.error("❌ Error:", err.message);
+  res.status(err.statusCode || 500).json({
     success: false,
-    statusCode,
-    message,
+    statusCode: err.statusCode || 500,
+    message: err.message || 'Internal Server Error',
   });
 });
 
-// Start Server
+// ✅ Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}!`);
