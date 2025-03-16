@@ -9,13 +9,13 @@ export default defineConfig(({ mode }) => ({
 
   server: {
     port: 5173, // Ensure Vite runs on a consistent port
-    proxy: mode === 'development' ? {
+    proxy: {
       '/api': {
-        target: 'https://alqadriblog-1.onrender.com',
-        secure: false,
+        target: process.env.VITE_API_URL || 'http://localhost:3000',
         changeOrigin: true,
+        secure: false,
       }
-    } : undefined,
+    }
   },
 
   resolve: {

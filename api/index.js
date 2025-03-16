@@ -22,25 +22,12 @@ if (!MONGO_URI) {
 
 const app = express(); // ✅ Define `app` first
 
-// Enable CORS after defining `app`
-
-// ✅ Enable CORS with Explicit Headers
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "http://localhost:5173"); // Allow frontend origin
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Allowed methods
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true"); // Allow cookies & authentication
-  if (req.method === "OPTIONS") {
-      return res.sendStatus(200); // Preflight request response
-  }
-  next();
-});
-
-// ✅ Use CORS Middleware
+// Middleware
 app.use(cors({
-origin: ["http://localhost:5173", "https://alqadriblog-1.onrender.com"], // Allow frontend origins
-methods: ["GET", "POST", "PUT", "DELETE"],
-credentials: true // Allow cookies and authentication
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.CORS_ORIGIN 
+    : 'http://localhost:5173',
+  credentials: true,
 }));
 
 // Connect to MongoDB

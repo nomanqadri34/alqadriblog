@@ -1,30 +1,22 @@
 {
-  "name": "al-qadri-blog",
+  "name": "qadri-blog",
   "version": "1.0.0",
-  "description": "",
-  "type": "module",
+  "description": "Full stack blog application",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon api/index.js",
-    "vercel-build": "npm install",
-    "start": "node api/index.js",
-    "build": "npm install && npm install --prefix client && npm run build --prefix client"
-  },
-  "engines": {
-    "node": ">=16.0.0"
+    "install-client": "cd client && npm install",
+    "install-api": "cd api && npm install",
+    "install": "npm run install-client && npm run install-api",
+    "build-client": "cd client && npm run build",
+    "build-api": "cd api && npm run build",
+    "build": "npm run build-client && npm run build-api",
+    "start": "cd api && npm start",
+    "dev": "concurrently \"cd api && npm run dev\" \"cd client && npm run dev\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cloudinary-react": "^1.8.1",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.2",
-    "nodemon": "^3.0.2"
+  "devDependencies": {
+    "concurrently": "^8.0.1"
   }
 }
